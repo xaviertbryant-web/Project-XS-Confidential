@@ -4,6 +4,7 @@ struct SettingsView: View {
     @EnvironmentObject var appViewModel: AppViewModel
     @EnvironmentObject var biometricService: BiometricService
     @EnvironmentObject var notificationService: NotificationService
+    @State private var showingApplePaySetup = false
     @State private var showingPINSetup = false
     @State private var newName = ""
     @State private var editingName = false
@@ -61,10 +62,7 @@ struct SettingsView: View {
                         .foregroundColor(.textSecondary)
                 }
                 Spacer()
-                Button {
-                    editingName.toggle()
-                    newName = appViewModel.profile.name
-                } label: {
+                Button { editingName.toggle(); newName = appViewModel.profile.name } label: {
                     Image(systemName: editingName ? "checkmark" : "pencil")
                         .foregroundColor(.brandOrange)
                         .font(.system(size: 16))
@@ -137,9 +135,7 @@ struct SettingsView: View {
 
                     Divider().padding(.horizontal, 16)
                     Button {
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
-                            appViewModel.showApplePayLock = true
-                        }
+                        withAnimation { appViewModel.showApplePayLock = true }
                     } label: {
                         settingRow(
                             icon: "play.circle.fill",
@@ -160,9 +156,7 @@ struct SettingsView: View {
 
             if appViewModel.profile.applePayLockEnabled {
                 HStack(spacing: 8) {
-                    Image(systemName: "info.circle.fill")
-                        .foregroundColor(.brandOrange)
-                        .font(.system(size: 14))
+                    Image(systemName: "info.circle.fill").foregroundColor(.brandOrange).font(.system(size: 14))
                     Text("A confirmation screen will appear before every Apple Pay payment. This prevents accidental or unauthorized purchases.")
                         .font(.system(size: 12))
                         .foregroundColor(.textSecondary)
