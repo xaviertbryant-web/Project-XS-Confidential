@@ -28,11 +28,15 @@ class AppViewModel: ObservableObject {
         max(totalIncomeThisMonth - totalSpentThisMonth, 0)
     }
 
-    // Simulated upcoming bills due before month end
+    var totalFixedCosts: Double { paycheckBudget.totalFixedCosts }
+
+    /// Fixed costs not yet reflected in this month's transactions (upcoming portion)
     var upcomingBillsAmount: Double {
-        transactions
-            .filter { !$0.isIncome && $0.category == .bills }
-            .reduce(0) { $0 + $1.amount } * 0.4 + 147.50
+        let alreadyPaidFixed = transactions
+            .filter { !$0.isIncome && ($0.category == .bills || $0.category == .health || $0.category == .transport)
+                      && Calendar.current.isDate($0.date, equalTo: Date(), toGranularity: .month) }
+            .reduce(0) { $0 + $1.amount }
+        return max(totalFixedCosts - alreadyPaidFixed, 0)
     }
 
     var monthlyBudget: Double { paycheckBudget.monthlyIncome }

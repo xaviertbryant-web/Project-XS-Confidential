@@ -1,5 +1,71 @@
 import Foundation
 
+// MARK: - Fixed recurring costs
+
+enum FixedCostCategory: String, CaseIterable, Codable {
+    case housing      = "Housing"
+    case utilities    = "Utilities"
+    case insurance    = "Insurance"
+    case phone        = "Phone"
+    case subscriptions = "Subscriptions"
+    case transport    = "Transport"
+    case other        = "Other"
+
+    var icon: String {
+        switch self {
+        case .housing:       return "house.fill"
+        case .utilities:     return "bolt.fill"
+        case .insurance:     return "shield.fill"
+        case .phone:         return "iphone"
+        case .subscriptions: return "repeat.circle.fill"
+        case .transport:     return "car.fill"
+        case .other:         return "ellipsis.circle.fill"
+        }
+    }
+
+    var color: String {
+        switch self {
+        case .housing:       return "4A90E2"
+        case .utilities:     return "F39C12"
+        case .insurance:     return "27AE60"
+        case .phone:         return "9B59B6"
+        case .subscriptions: return "E74C3C"
+        case .transport:     return "3498DB"
+        case .other:         return "95A5A6"
+        }
+    }
+
+    var defaultEmoji: String {
+        switch self {
+        case .housing:       return "🏠"
+        case .utilities:     return "⚡"
+        case .insurance:     return "🛡️"
+        case .phone:         return "📱"
+        case .subscriptions: return "📺"
+        case .transport:     return "🚗"
+        case .other:         return "📌"
+        }
+    }
+}
+
+struct FixedCost: Identifiable, Codable {
+    let id: UUID
+    var name: String
+    var amount: Double
+    var category: FixedCostCategory
+    var emoji: String
+
+    static let sampleData: [FixedCost] = [
+        FixedCost(id: UUID(), name: "Rent",          amount: 1200.00, category: .housing,       emoji: "🏠"),
+        FixedCost(id: UUID(), name: "Electric",      amount: 92.40,   category: .utilities,     emoji: "⚡"),
+        FixedCost(id: UUID(), name: "Car Insurance", amount: 120.00,  category: .insurance,     emoji: "🛡️"),
+        FixedCost(id: UUID(), name: "Phone Plan",    amount: 45.00,   category: .phone,         emoji: "📱"),
+        FixedCost(id: UUID(), name: "Netflix",       amount: 15.99,   category: .subscriptions, emoji: "📺"),
+    ]
+}
+
+// MARK: - Budget rule
+
 enum BudgetRule: String, CaseIterable {
     case fiftyThirtyTwenty = "50/30/20"
     case seventyTwentyTen = "70/20/10"
@@ -44,6 +110,7 @@ struct PaycheckBudget: Codable {
     var wantsPercentage: Double
     var savingsPercentage: Double
     var notificationsEnabled: Bool
+    var fixedCosts: [FixedCost]
 
     var monthlyIncome: Double {
         switch frequency {
@@ -54,6 +121,14 @@ struct PaycheckBudget: Codable {
         }
     }
 
+    var totalFixedCosts: Double { fixedCosts.reduce(0) { $0 + $1.amount } }
+
+    /// Income available for needs/wants/savings splits after fixed costs
+    var discretionaryIncome: Double { max(monthlyIncome - totalFixedCosts, 0) }
+
+    /// What fraction of monthly income is already committed to fixed costs
+    var fixedCostsFraction: Double { monthlyIncome > 0 ? min(totalFixedCosts / monthlyIncome, 1.0) : 0 }
+
     static let `default` = PaycheckBudget(
         paycheckAmount: 3200,
         frequency: .biweekly,
@@ -61,7 +136,8 @@ struct PaycheckBudget: Codable {
         needsPercentage: 0.50,
         wantsPercentage: 0.30,
         savingsPercentage: 0.20,
-        notificationsEnabled: false
+        notificationsEnabled: false,
+        fixedCosts: FixedCost.sampleData
     )
 }
 
