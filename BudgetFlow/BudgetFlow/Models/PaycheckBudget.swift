@@ -64,6 +64,90 @@ struct FixedCost: Identifiable, Codable {
     ]
 }
 
+// MARK: - Budget bucket & sub-categories
+
+enum BudgetBucket: String, CaseIterable, Codable, Identifiable {
+    case needs   = "Needs"
+    case wants   = "Wants"
+    case savings = "Savings"
+
+    var id: String { rawValue }
+
+    var emoji: String {
+        switch self {
+        case .needs:   return "🏠"
+        case .wants:   return "🎉"
+        case .savings: return "💰"
+        }
+    }
+
+    var sfIcon: String {
+        switch self {
+        case .needs:   return "house.fill"
+        case .wants:   return "sparkles"
+        case .savings: return "chart.line.uptrend.xyaxis"
+        }
+    }
+
+    var colorHex: String {
+        switch self {
+        case .needs:   return "FF6B35"
+        case .wants:   return "FF4757"
+        case .savings: return "33C759"
+        }
+    }
+
+    var tagline: String {
+        switch self {
+        case .needs:   return "Essentials & commitments"
+        case .wants:   return "Lifestyle & enjoyment"
+        case .savings: return "Future you will thank you"
+        }
+    }
+
+    var suggestions: [(name: String, emoji: String, amount: Double)] {
+        switch self {
+        case .needs: return [
+            ("Groceries",  "🛒", 300), ("Transport",  "🚗", 150), ("Utilities",  "⚡", 90),
+            ("Internet",   "📡",  60), ("Phone",      "📱",  45), ("Health Ins.","🏥",180),
+            ("Medications","💊",  50), ("Childcare",  "👶", 400), ("Pet Food",   "🐾",  60),
+            ("Clothing",   "👕",  80),
+        ]
+        case .wants: return [
+            ("Dining Out",    "🍽️", 200), ("Entertainment","🎬",  80), ("Shopping",    "🛍️", 120),
+            ("Gym",           "💪",  40), ("Streaming",    "📺",  50), ("Personal Care","💅",  60),
+            ("Hobbies",       "🎨",  80), ("Travel Fund",  "✈️", 150), ("Gaming",       "🎮",  30),
+            ("Coffee",        "☕",  50),
+        ]
+        case .savings: return [
+            ("Emergency",  "🛡️", 300), ("Investments", "📈", 200), ("Retirement", "🏦", 150),
+            ("Vacation",   "🌴", 100), ("Home Fund",   "🏡", 200), ("Education",  "🎓", 100),
+            ("Car Fund",   "🚗", 150), ("Side Hustle", "💼", 100),
+        ]
+        }
+    }
+}
+
+struct BudgetSubCategory: Identifiable, Codable {
+    let id: UUID
+    var name: String
+    var emoji: String
+    var monthlyAmount: Double
+    var bucket: BudgetBucket
+
+    static let defaults: [BudgetSubCategory] = [
+        BudgetSubCategory(id: UUID(), name: "Groceries",     emoji: "🛒", monthlyAmount: 300,  bucket: .needs),
+        BudgetSubCategory(id: UUID(), name: "Transport",     emoji: "🚗", monthlyAmount: 150,  bucket: .needs),
+        BudgetSubCategory(id: UUID(), name: "Utilities",     emoji: "⚡", monthlyAmount: 90,   bucket: .needs),
+        BudgetSubCategory(id: UUID(), name: "Dining Out",    emoji: "🍽️", monthlyAmount: 200,  bucket: .wants),
+        BudgetSubCategory(id: UUID(), name: "Entertainment", emoji: "🎬", monthlyAmount: 80,   bucket: .wants),
+        BudgetSubCategory(id: UUID(), name: "Shopping",      emoji: "🛍️", monthlyAmount: 120,  bucket: .wants),
+        BudgetSubCategory(id: UUID(), name: "Emergency",     emoji: "🛡️", monthlyAmount: 300,  bucket: .savings),
+        BudgetSubCategory(id: UUID(), name: "Investments",   emoji: "📈", monthlyAmount: 200,  bucket: .savings),
+        BudgetSubCategory(id: UUID(), name: "Goals",         emoji: "🎯", monthlyAmount: 100,  bucket: .savings),
+    ]
+}
+
 // MARK: - Budget rule
 
 enum BudgetRule: String, CaseIterable {
@@ -111,23 +195,36 @@ struct PaycheckBudget: Codable {
     var savingsPercentage: Double
     var notificationsEnabled: Bool
     var fixedCosts: [FixedCost]
+    var subCategories: [BudgetSubCategory]
 
     var monthlyIncome: Double {
         switch frequency {
-        case .weekly: return paycheckAmount * 52 / 12
-        case .biweekly: return paycheckAmount * 26 / 12
+        case .weekly:      return paycheckAmount * 52 / 12
+        case .biweekly:    return paycheckAmount * 26 / 12
         case .semimonthly: return paycheckAmount * 2
-        case .monthly: return paycheckAmount
+        case .monthly:     return paycheckAmount
         }
     }
 
     var totalFixedCosts: Double { fixedCosts.reduce(0) { $0 + $1.amount } }
-
-    /// Income available for needs/wants/savings splits after fixed costs
     var discretionaryIncome: Double { max(monthlyIncome - totalFixedCosts, 0) }
-
-    /// What fraction of monthly income is already committed to fixed costs
     var fixedCostsFraction: Double { monthlyIncome > 0 ? min(totalFixedCosts / monthlyIncome, 1.0) : 0 }
+
+    func subCategoryTotal(for bucket: BudgetBucket) -> Double {
+        subCategories.filter { $0.bucket == bucket }.reduce(0) { $0 + $1.monthlyAmount }
+    }
+
+    var totalSubCategoryAllocation: Double {
+        BudgetBucket.allCases.reduce(0) { $0 + subCategoryTotal(for: $1) }
+    }
+
+    var unallocated: Double {
+        max(monthlyIncome - totalFixedCosts - totalSubCategoryAllocation, 0)
+    }
+
+    var isOverAllocated: Bool {
+        totalFixedCosts + totalSubCategoryAllocation > monthlyIncome
+    }
 
     static let `default` = PaycheckBudget(
         paycheckAmount: 3200,
@@ -137,7 +234,8 @@ struct PaycheckBudget: Codable {
         wantsPercentage: 0.30,
         savingsPercentage: 0.20,
         notificationsEnabled: false,
-        fixedCosts: FixedCost.sampleData
+        fixedCosts: FixedCost.sampleData,
+        subCategories: BudgetSubCategory.defaults
     )
 }
 

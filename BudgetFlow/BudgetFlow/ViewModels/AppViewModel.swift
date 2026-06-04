@@ -57,11 +57,14 @@ class AppViewModel: ObservableObject {
     static let wantsCategories: Set<TransactionCategory> = [.food, .shopping, .entertainment, .other]
 
     func budgetFor(category: TransactionCategory) -> Double {
-        let monthly = paycheckBudget.monthlyIncome
         if Self.needsCategories.contains(category) {
-            return (monthly * paycheckBudget.needsPercentage) / Double(Self.needsCategories.count)
+            let needsTotal = paycheckBudget.subCategoryTotal(for: .needs)
+            let base = needsTotal > 0 ? needsTotal : paycheckBudget.monthlyIncome * paycheckBudget.needsPercentage
+            return base / Double(Self.needsCategories.count)
         } else if Self.wantsCategories.contains(category) {
-            return (monthly * paycheckBudget.wantsPercentage) / Double(Self.wantsCategories.count)
+            let wantsTotal = paycheckBudget.subCategoryTotal(for: .wants)
+            let base = wantsTotal > 0 ? wantsTotal : paycheckBudget.monthlyIncome * paycheckBudget.wantsPercentage
+            return base / Double(Self.wantsCategories.count)
         }
         return 0
     }
