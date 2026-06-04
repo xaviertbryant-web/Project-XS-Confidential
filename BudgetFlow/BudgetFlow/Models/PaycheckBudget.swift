@@ -1,5 +1,25 @@
 import Foundation
 
+// MARK: - Billing cycle
+
+enum BillingCycle: String, CaseIterable, Codable {
+    case monthly = "Monthly"
+    case annual  = "Annual"
+    case weekly  = "Weekly"
+
+    var shortLabel: String {
+        switch self { case .monthly: return "/mo"; case .annual: return "/yr"; case .weekly: return "/wk" }
+    }
+
+    var perMonthMultiplier: Double {
+        switch self {
+        case .monthly: return 1.0
+        case .annual:  return 1.0 / 12.0
+        case .weekly:  return 52.0 / 12.0
+        }
+    }
+}
+
 // MARK: - Fixed recurring costs
 
 enum FixedCostCategory: String, CaseIterable, Codable {
@@ -51,16 +71,23 @@ enum FixedCostCategory: String, CaseIterable, Codable {
 struct FixedCost: Identifiable, Codable {
     let id: UUID
     var name: String
-    var amount: Double
+    var amount: Double          // as-billed (monthly, annual, or weekly depending on billingCycle)
     var category: FixedCostCategory
     var emoji: String
+    var billingCycle: BillingCycle
+
+    /// Always-monthly cost used in budget calculations
+    var monthlyEquivalent: Double { amount * billingCycle.perMonthMultiplier }
+    var annualCost: Double        { monthlyEquivalent * 12 }
 
     static let sampleData: [FixedCost] = [
-        FixedCost(id: UUID(), name: "Rent",          amount: 1200.00, category: .housing,       emoji: "🏠"),
-        FixedCost(id: UUID(), name: "Electric",      amount: 92.40,   category: .utilities,     emoji: "⚡"),
-        FixedCost(id: UUID(), name: "Car Insurance", amount: 120.00,  category: .insurance,     emoji: "🛡️"),
-        FixedCost(id: UUID(), name: "Phone Plan",    amount: 45.00,   category: .phone,         emoji: "📱"),
-        FixedCost(id: UUID(), name: "Netflix",       amount: 15.99,   category: .subscriptions, emoji: "📺"),
+        FixedCost(id: UUID(), name: "Rent",          amount: 1200.00, category: .housing,       emoji: "🏠", billingCycle: .monthly),
+        FixedCost(id: UUID(), name: "Electric",      amount: 92.40,   category: .utilities,     emoji: "⚡", billingCycle: .monthly),
+        FixedCost(id: UUID(), name: "Car Insurance", amount: 120.00,  category: .insurance,     emoji: "🛡️", billingCycle: .monthly),
+        FixedCost(id: UUID(), name: "Phone Plan",    amount: 45.00,   category: .phone,         emoji: "📱", billingCycle: .monthly),
+        FixedCost(id: UUID(), name: "Netflix",       amount: 15.99,   category: .subscriptions, emoji: "📺", billingCycle: .monthly),
+        FixedCost(id: UUID(), name: "Spotify",       amount: 10.99,   category: .subscriptions, emoji: "🎵", billingCycle: .monthly),
+        FixedCost(id: UUID(), name: "iCloud+ 50GB",  amount: 0.99,    category: .subscriptions, emoji: "☁️", billingCycle: .monthly),
     ]
 }
 
@@ -206,7 +233,8 @@ struct PaycheckBudget: Codable {
         }
     }
 
-    var totalFixedCosts: Double { fixedCosts.reduce(0) { $0 + $1.amount } }
+    var totalFixedCosts: Double { fixedCosts.reduce(0) { $0 + $1.monthlyEquivalent } }
+    var totalSubscriptions: Double { fixedCosts.filter { $0.category == .subscriptions }.reduce(0) { $0 + $1.monthlyEquivalent } }
     var discretionaryIncome: Double { max(monthlyIncome - totalFixedCosts, 0) }
     var fixedCostsFraction: Double { monthlyIncome > 0 ? min(totalFixedCosts / monthlyIncome, 1.0) : 0 }
 

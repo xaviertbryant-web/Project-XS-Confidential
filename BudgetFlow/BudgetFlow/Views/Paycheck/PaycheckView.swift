@@ -8,6 +8,8 @@ struct PaycheckView: View {
     @State private var expandedBucket: BudgetBucket? = .needs
     @State private var showingAddFixedCost = false
     @State private var editingFixedCost: FixedCost? = nil
+    @State private var showingAddSubscription = false
+    @State private var editingSubscription: FixedCost? = nil
     @State private var addingToBucket: BudgetBucket? = nil
     @State private var editingSubCat: BudgetSubCategory? = nil
     @FocusState private var paycheckFocused: Bool
@@ -58,6 +60,7 @@ struct PaycheckView: View {
                             )
                         }
                         allocationFooter
+                        subscriptionsSection
                         fixedCostsSummaryCard
                         bankNotificationSection
                     }
@@ -79,6 +82,16 @@ struct PaycheckView: View {
         }
         .sheet(item: $editingFixedCost) { cost in
             AddFixedCostSheet(existingCost: cost) { updated in
+                if let i = appViewModel.paycheckBudget.fixedCosts.firstIndex(where: { $0.id == updated.id }) {
+                    appViewModel.paycheckBudget.fixedCosts[i] = updated
+                }
+            }
+        }
+        .sheet(isPresented: $showingAddSubscription) {
+            AddSubscriptionSheet(existing: nil) { appViewModel.paycheckBudget.fixedCosts.append($0) }
+        }
+        .sheet(item: $editingSubscription) { sub in
+            AddSubscriptionSheet(existing: sub) { updated in
                 if let i = appViewModel.paycheckBudget.fixedCosts.firstIndex(where: { $0.id == updated.id }) {
                     appViewModel.paycheckBudget.fixedCosts[i] = updated
                 }
@@ -290,7 +303,128 @@ struct PaycheckView: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
+    // MARK: Subscriptions section
+
+    private var subscriptionCosts: [FixedCost] { budget.fixedCosts.filter { $0.category == .subscriptions } }
+    private var totalSubscriptionsMonthly: Double { subscriptionCosts.reduce(0) { $0 + $1.monthlyEquivalent } }
+
+    var subscriptionsSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                HStack(spacing: 8) {
+                    ZStack {
+                        Circle().fill(Color(hex: "9B59B6").opacity(0.12)).frame(width: 34, height: 34)
+                        Image(systemName: "repeat.circle.fill")
+                            .foregroundColor(Color(hex: "9B59B6"))
+                            .font(.system(size: 18))
+                    }
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Subscriptions")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.textPrimary)
+                        Text("Recurring services")
+                            .font(.system(size: 11))
+                            .foregroundColor(.textSecondary)
+                    }
+                }
+                Spacer()
+                Button { showingAddSubscription = true } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.system(size: 22))
+                        .foregroundColor(Color(hex: "9B59B6"))
+                }
+            }
+
+            if subscriptionCosts.isEmpty {
+                HStack(spacing: 10) {
+                    Image(systemName: "sparkles").foregroundColor(Color(hex: "9B59B6").opacity(0.5)).font(.system(size: 18))
+                    Text("No subscriptions added yet.")
+                        .font(.system(size: 13)).foregroundColor(.textSecondary)
+                }
+                .padding(.vertical, 4)
+            } else {
+                ForEach(subscriptionCosts) { sub in
+                    HStack(spacing: 12) {
+                        Text(sub.emoji).font(.system(size: 20))
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(sub.name)
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.textPrimary)
+                            if sub.billingCycle != .monthly {
+                                Text(sub.billingCycle.rawValue)
+                                    .font(.system(size: 10, weight: .medium))
+                                    .foregroundColor(Color(hex: "9B59B6"))
+                                    .padding(.horizontal, 6).padding(.vertical, 2)
+                                    .background(Color(hex: "9B59B6").opacity(0.10))
+                                    .clipShape(Capsule())
+                            }
+                        }
+                        Spacer()
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text("$\(String(format: "%.2f", sub.monthlyEquivalent))/mo")
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundColor(.textPrimary)
+                            if sub.billingCycle != .monthly {
+                                Text("$\(String(format: "%.2f", sub.amount)) billed \(sub.billingCycle.shortLabel)")
+                                    .font(.system(size: 10))
+                                    .foregroundColor(.textSecondary)
+                            }
+                        }
+                        Button { editingSubscription = sub } label: {
+                            Image(systemName: "pencil")
+                                .font(.system(size: 12))
+                                .foregroundColor(.textSecondary)
+                        }
+                        Button {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                appViewModel.paycheckBudget.fixedCosts.removeAll { $0.id == sub.id }
+                            }
+                        } label: {
+                            Image(systemName: "trash")
+                                .font(.system(size: 12))
+                                .foregroundColor(.brandRed.opacity(0.7))
+                        }
+                    }
+                    if sub.id != subscriptionCosts.last?.id {
+                        Divider().padding(.leading, 44)
+                    }
+                }
+
+                Divider()
+
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Total subscriptions")
+                            .font(.system(size: 12)).foregroundColor(.textSecondary)
+                        Text("$\(String(format: "%.2f", totalSubscriptionsMonthly * 12)) / year")
+                            .font(.system(size: 11)).foregroundColor(.textSecondary)
+                    }
+                    Spacer()
+                    Text("$\(String(format: "%.2f", totalSubscriptionsMonthly)) / mo")
+                        .font(.system(size: 15, weight: .bold)).foregroundColor(Color(hex: "9B59B6"))
+                }
+
+                if subscriptionCosts.count >= 3 {
+                    HStack(spacing: 8) {
+                        Image(systemName: "lightbulb.fill").foregroundColor(.brandAmber).font(.system(size: 13))
+                        Text("You have \(subscriptionCosts.count) subscriptions. Cancelling unused ones could save $\(String(format: "%.0f", totalSubscriptionsMonthly * 0.3))+/mo.")
+                            .font(.system(size: 12)).foregroundColor(.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(12)
+                    .background(Color.brandAmber.opacity(0.07))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+            }
+        }
+        .padding(20)
+        .cardStyle()
+    }
+
     // MARK: Fixed costs compact card
+
+    private var nonSubscriptionCosts: [FixedCost] { budget.fixedCosts.filter { $0.category != .subscriptions } }
+    private var totalNonSubscriptionCosts: Double { nonSubscriptionCosts.reduce(0) { $0 + $1.monthlyEquivalent } }
 
     var fixedCostsSummaryCard: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -311,15 +445,22 @@ struct PaycheckView: View {
                 }
             }
 
-            // Compact rows
-            ForEach(budget.fixedCosts) { cost in
+            // Compact rows — subscriptions managed separately above
+            ForEach(nonSubscriptionCosts) { cost in
                 HStack(spacing: 12) {
                     Text(cost.emoji).font(.system(size: 18))
-                    Text(cost.name)
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.textPrimary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(cost.name)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.textPrimary)
+                        if cost.billingCycle != .monthly {
+                            Text("$\(String(format: "%.2f", cost.amount))\(cost.billingCycle.shortLabel)")
+                                .font(.system(size: 10))
+                                .foregroundColor(.textSecondary)
+                        }
+                    }
                     Spacer()
-                    Text("$\(String(format: "%.2f", cost.amount))")
+                    Text("$\(String(format: "%.2f", cost.monthlyEquivalent))/mo")
                         .font(.system(size: 14, weight: .bold))
                         .foregroundColor(.textPrimary)
                     Button { editingFixedCost = cost } label: {
@@ -337,7 +478,7 @@ struct PaycheckView: View {
                 }
             }
 
-            if budget.fixedCosts.isEmpty {
+            if nonSubscriptionCosts.isEmpty {
                 Text("No fixed costs yet. Tap + to add recurring bills.")
                     .font(.system(size: 13))
                     .foregroundColor(.textSecondary)
@@ -348,7 +489,7 @@ struct PaycheckView: View {
                 Text("Total committed")
                     .font(.system(size: 13)).foregroundColor(.textSecondary)
                 Spacer()
-                Text("$\(String(format: "%.2f", budget.totalFixedCosts)) / mo")
+                Text("$\(String(format: "%.2f", totalNonSubscriptionCosts)) / mo")
                     .font(.system(size: 14, weight: .bold)).foregroundColor(Color(hex: "4A90E2"))
             }
         }
@@ -788,6 +929,7 @@ struct AddFixedCostSheet: View {
     @State private var amountText: String = ""
     @State private var category: FixedCostCategory = .other
     @State private var emoji: String = "📌"
+    @State private var billingCycle: BillingCycle = .monthly
     @FocusState private var amountFocused: Bool
 
     private var isEditing: Bool { existingCost != nil }
@@ -848,6 +990,21 @@ struct AddFixedCostSheet: View {
                                 }
                             }
                         }
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Billing Cycle").font(.system(size: 12, weight: .semibold)).foregroundColor(.textSecondary)
+                            HStack(spacing: 8) {
+                                ForEach(BillingCycle.allCases, id: \.self) { cycle in
+                                    Button { billingCycle = cycle } label: {
+                                        Text(cycle.rawValue)
+                                            .font(.system(size: 13, weight: .semibold))
+                                            .foregroundColor(billingCycle == cycle ? .white : .textSecondary)
+                                            .padding(.horizontal, 14).padding(.vertical, 8)
+                                            .background(billingCycle == cycle ? LinearGradient.brand : LinearGradient(colors: [Color.appSurface], startPoint: .leading, endPoint: .trailing))
+                                            .clipShape(Capsule())
+                                    }
+                                }
+                            }
+                        }
                     }
                     .padding(20).cardStyle()
 
@@ -887,7 +1044,7 @@ struct AddFixedCostSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(isEditing ? "Save" : "Add") {
                         guard !name.isEmpty, let amount = Double(amountText), amount > 0 else { return }
-                        onSave(FixedCost(id: existingCost?.id ?? UUID(), name: name, amount: amount, category: category, emoji: emoji))
+                        onSave(FixedCost(id: existingCost?.id ?? UUID(), name: name, amount: amount, category: category, emoji: emoji, billingCycle: billingCycle))
                         dismiss()
                     }
                     .font(.system(size: 14, weight: .bold))
@@ -897,7 +1054,180 @@ struct AddFixedCostSheet: View {
             }
             .onAppear {
                 if let e = existingCost {
-                    name = e.name; amountText = String(format: "%.2f", e.amount); category = e.category; emoji = e.emoji
+                    name = e.name; amountText = String(format: "%.2f", e.amount)
+                    category = e.category; emoji = e.emoji; billingCycle = e.billingCycle
+                } else { amountFocused = true }
+            }
+        }
+    }
+}
+
+// MARK: - Add / Edit Subscription Sheet
+
+struct AddSubscriptionSheet: View {
+    let existing: FixedCost?
+    let onSave: (FixedCost) -> Void
+
+    @Environment(\.dismiss) var dismiss
+    @State private var name: String = ""
+    @State private var amountText: String = ""
+    @State private var emoji: String = "📺"
+    @State private var billingCycle: BillingCycle = .monthly
+    @FocusState private var amountFocused: Bool
+
+    private var isEditing: Bool { existing != nil }
+    private let accentColor = Color(hex: "9B59B6")
+
+    private struct SubPreset: Identifiable {
+        let id = UUID()
+        let name: String; let emoji: String; let amount: Double; let cycle: BillingCycle
+        let groupLabel: String
+    }
+
+    private let presets: [SubPreset] = [
+        // Streaming
+        SubPreset(name: "Netflix",          emoji: "📺", amount: 15.99, cycle: .monthly,  groupLabel: "Streaming"),
+        SubPreset(name: "Disney+",          emoji: "🏰", amount: 7.99,  cycle: .monthly,  groupLabel: "Streaming"),
+        SubPreset(name: "Hulu",             emoji: "🎬", amount: 7.99,  cycle: .monthly,  groupLabel: "Streaming"),
+        SubPreset(name: "HBO Max",          emoji: "🎭", amount: 15.99, cycle: .monthly,  groupLabel: "Streaming"),
+        SubPreset(name: "Apple TV+",        emoji: "🍎", amount: 9.99,  cycle: .monthly,  groupLabel: "Streaming"),
+        SubPreset(name: "YouTube Premium",  emoji: "▶️", amount: 13.99, cycle: .monthly,  groupLabel: "Streaming"),
+        // Music
+        SubPreset(name: "Spotify",          emoji: "🎵", amount: 10.99, cycle: .monthly,  groupLabel: "Music"),
+        SubPreset(name: "Apple Music",      emoji: "🎶", amount: 10.99, cycle: .monthly,  groupLabel: "Music"),
+        SubPreset(name: "Amazon Music",     emoji: "🎼", amount: 8.99,  cycle: .monthly,  groupLabel: "Music"),
+        // Cloud & Software
+        SubPreset(name: "iCloud+ 50GB",     emoji: "☁️", amount: 0.99,  cycle: .monthly,  groupLabel: "Cloud & Software"),
+        SubPreset(name: "iCloud+ 200GB",    emoji: "☁️", amount: 2.99,  cycle: .monthly,  groupLabel: "Cloud & Software"),
+        SubPreset(name: "Microsoft 365",    emoji: "💼", amount: 99.99, cycle: .annual,   groupLabel: "Cloud & Software"),
+        SubPreset(name: "Adobe CC",         emoji: "🎨", amount: 54.99, cycle: .monthly,  groupLabel: "Cloud & Software"),
+        SubPreset(name: "Amazon Prime",     emoji: "📦", amount: 139,   cycle: .annual,   groupLabel: "Cloud & Software"),
+        // Health & Fitness
+        SubPreset(name: "Gym",              emoji: "💪", amount: 40.00, cycle: .monthly,  groupLabel: "Health & Fitness"),
+        SubPreset(name: "MyFitnessPal",     emoji: "🏃", amount: 19.99, cycle: .monthly,  groupLabel: "Health & Fitness"),
+        SubPreset(name: "Calm",             emoji: "🧘", amount: 69.99, cycle: .annual,   groupLabel: "Health & Fitness"),
+        SubPreset(name: "Headspace",        emoji: "🌿", amount: 99.99, cycle: .annual,   groupLabel: "Health & Fitness"),
+        // Gaming
+        SubPreset(name: "Xbox Game Pass",   emoji: "🎮", amount: 14.99, cycle: .monthly,  groupLabel: "Gaming"),
+        SubPreset(name: "PlayStation Plus", emoji: "🕹️", amount: 59.99, cycle: .annual,   groupLabel: "Gaming"),
+        SubPreset(name: "Nintendo Online",  emoji: "🎯", amount: 19.99, cycle: .annual,   groupLabel: "Gaming"),
+        SubPreset(name: "Apple Arcade",     emoji: "👾", amount: 4.99,  cycle: .monthly,  groupLabel: "Gaming"),
+    ]
+
+    private var groups: [(label: String, items: [SubPreset])] {
+        let labels = ["Streaming", "Music", "Cloud & Software", "Health & Fitness", "Gaming"]
+        return labels.map { label in
+            (label: label, items: presets.filter { $0.groupLabel == label })
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 24) {
+                    // Amount input
+                    VStack(spacing: 6) {
+                        Text("Amount").font(.system(size: 13, weight: .semibold)).foregroundColor(.textSecondary)
+                        HStack(alignment: .firstTextBaseline, spacing: 4) {
+                            Text("$").font(.system(size: 32, weight: .bold)).foregroundColor(accentColor)
+                            TextField("0.00", text: $amountText)
+                                .font(.system(size: 44, weight: .bold)).foregroundColor(.textPrimary)
+                                .keyboardType(.decimalPad).focused($amountFocused).multilineTextAlignment(.center)
+                        }
+                        // Billing cycle picker
+                        HStack(spacing: 8) {
+                            ForEach(BillingCycle.allCases, id: \.self) { cycle in
+                                Button { billingCycle = cycle } label: {
+                                    Text(cycle.rawValue)
+                                        .font(.system(size: 13, weight: .semibold))
+                                        .foregroundColor(billingCycle == cycle ? .white : .textSecondary)
+                                        .padding(.horizontal, 14).padding(.vertical, 8)
+                                        .background(billingCycle == cycle ? accentColor : Color.appSurface)
+                                        .clipShape(Capsule())
+                                }
+                            }
+                        }
+                        if billingCycle != .monthly, let amt = Double(amountText), amt > 0 {
+                            let monthly = amt * billingCycle.perMonthMultiplier
+                            Text("≈ $\(String(format: "%.2f", monthly)) / mo")
+                                .font(.system(size: 12)).foregroundColor(accentColor)
+                        }
+                    }
+                    .padding(.top, 8)
+
+                    // Name + emoji
+                    VStack(spacing: 14) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Service Name").font(.system(size: 12, weight: .semibold)).foregroundColor(.textSecondary)
+                            HStack(spacing: 10) {
+                                Text(emoji).font(.system(size: 22))
+                                TextField("e.g. Netflix", text: $name)
+                                    .font(.system(size: 16)).padding(14)
+                                    .background(Color.appSurface).clipShape(RoundedRectangle(cornerRadius: 12))
+                            }
+                        }
+                    }
+                    .padding(20).cardStyle()
+
+                    // Preset groups
+                    if !isEditing {
+                        VStack(alignment: .leading, spacing: 20) {
+                            ForEach(groups, id: \.label) { group in
+                                VStack(alignment: .leading, spacing: 10) {
+                                    Text(group.label)
+                                        .font(.system(size: 13, weight: .semibold))
+                                        .foregroundColor(.textSecondary)
+                                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+                                        ForEach(group.items) { p in
+                                            Button {
+                                                name = p.name; amountText = String(format: p.cycle == .annual ? "%.2f" : "%.2f", p.amount)
+                                                emoji = p.emoji; billingCycle = p.cycle
+                                            } label: {
+                                                HStack(spacing: 8) {
+                                                    Text(p.emoji).font(.system(size: 18))
+                                                    VStack(alignment: .leading, spacing: 2) {
+                                                        Text(p.name)
+                                                            .font(.system(size: 13, weight: .semibold))
+                                                            .foregroundColor(.textPrimary).lineLimit(1)
+                                                        let monthly = p.amount * p.cycle.perMonthMultiplier
+                                                        Text("~$\(String(format: "%.2f", monthly))/mo")
+                                                            .font(.system(size: 10)).foregroundColor(.textSecondary)
+                                                    }
+                                                    Spacer()
+                                                }
+                                                .padding(.horizontal, 12).padding(.vertical, 10)
+                                                .background(name == p.name ? accentColor.opacity(0.10) : Color.appSurface)
+                                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                                .overlay(RoundedRectangle(cornerRadius: 12).stroke(name == p.name ? accentColor : Color.clear, lineWidth: 1.5))
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    PrimaryButton(title: isEditing ? "Save Changes" : "Add Subscription") {
+                        guard !name.isEmpty, let amount = Double(amountText), amount > 0 else { return }
+                        onSave(FixedCost(id: existing?.id ?? UUID(), name: name, amount: amount, category: .subscriptions, emoji: emoji, billingCycle: billingCycle))
+                        dismiss()
+                    }
+                    .padding(.horizontal, 4)
+                    .disabled(name.isEmpty || (Double(amountText) ?? 0) <= 0)
+                }
+                .padding(.horizontal, 20).padding(.bottom, 40)
+            }
+            .navigationTitle(isEditing ? "Edit Subscription" : "Add Subscription")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }.foregroundColor(accentColor)
+                }
+            }
+            .onAppear {
+                if let e = existing {
+                    name = e.name; amountText = String(format: "%.2f", e.amount)
+                    emoji = e.emoji; billingCycle = e.billingCycle
                 } else { amountFocused = true }
             }
         }
