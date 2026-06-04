@@ -4,6 +4,7 @@ struct GoalsView: View {
     @EnvironmentObject var appViewModel: AppViewModel
     @StateObject private var vm = GoalsViewModel()
     @State private var appeared = false
+    @State private var editingGoal: Goal? = nil
 
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
 
@@ -31,6 +32,13 @@ struct GoalsView: View {
                 AddGoalSheet(vm: vm) { goal in
                     appViewModel.addGoal(goal)
                     vm.showingAddGoal = false
+                }
+            }
+            .sheet(item: $editingGoal) { goal in
+                EditGoalSheet(goal: goal) { updated in
+                    appViewModel.updateGoalFull(updated)
+                } onDelete: {
+                    appViewModel.deleteGoal(goal)
                 }
             }
         }
@@ -98,16 +106,22 @@ struct GoalsView: View {
 
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(activeGoals) { goal in
-                    GoalCardView(goal: goal) {
-                        vm.selectedGoal = goal
-                        vm.showingGoalDetail = true
-                    }
+                    GoalCardView(
+                        goal: goal,
+                        onTap: { vm.selectedGoal = goal; vm.showingGoalDetail = true },
+                        onEdit: { editingGoal = goal },
+                        onDelete: { appViewModel.deleteGoal(goal) }
+                    )
                 }
             }
         }
         .sheet(isPresented: $vm.showingGoalDetail) {
             if let goal = vm.selectedGoal {
-                GoalDetailSheet(goal: goal)
+                GoalDetailSheet(
+                    goal: goal,
+                    onEdit: { vm.showingGoalDetail = false; DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { editingGoal = goal } },
+                    onDelete: { appViewModel.deleteGoal(goal); vm.showingGoalDetail = false }
+                )
             }
         }
     }
@@ -120,7 +134,11 @@ struct GoalsView: View {
 
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(completedGoals) { goal in
-                    GoalCardView(goal: goal)
+                    GoalCardView(
+                        goal: goal,
+                        onEdit: { editingGoal = goal },
+                        onDelete: { appViewModel.deleteGoal(goal) }
+                    )
                 }
             }
         }
@@ -234,10 +252,13 @@ struct AppTextFieldStyle: TextFieldStyle {
 
 struct GoalDetailSheet: View {
     let goal: Goal
+    let onEdit: () -> Void
+    let onDelete: () -> Void
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var appViewModel: AppViewModel
     @State private var addAmount: String = ""
     @State private var showingAddFunds = false
+    @State private var showingDeleteConfirm = false
 
     var body: some View {
         NavigationStack {
@@ -251,26 +272,63 @@ struct GoalDetailSheet: View {
                     .padding(.top, 20)
 
                     HStack(spacing: 16) {
-                        statBox(label: "Saved", value: "$\(String(format: "%.0f", goal.currentAmount))")
+                        statBox(label: "Saved",     value: "$\(String(format: "%.0f", goal.currentAmount))")
                         statBox(label: "Remaining", value: "$\(String(format: "%.0f", goal.remaining))")
-                        statBox(label: "ETA", value: "\(goal.monthsToGoal) mo")
+                        statBox(label: "ETA",       value: goal.isCompleted ? "Done" : "\(goal.monthsToGoal) mo")
                     }
                     .padding(.horizontal, 20)
 
                     if !goal.isCompleted {
-                        PrimaryButton(title: "Add Funds") {
-                            showingAddFunds = true
+                        VStack(spacing: 12) {
+                            PrimaryButton(title: "Add Funds") { showingAddFunds = true }
+                            Button {
+                                onEdit()
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "pencil")
+                                    Text("Edit Goal")
+                                }
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundColor(.brandOrange)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 14)
+                                .background(Color.brandOrange.opacity(0.08))
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
+                            }
                         }
                         .padding(.horizontal, 20)
                     }
+
+                    Button(role: .destructive) {
+                        showingDeleteConfirm = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "trash")
+                            Text("Delete Goal")
+                        }
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.brandRed)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 13)
+                        .background(Color.brandRed.opacity(0.07))
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                    }
+                    .padding(.horizontal, 20)
                 }
                 .padding(.bottom, 40)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") { dismiss() }.foregroundColor(.brandOrange)
+                }
+                if !goal.isCompleted {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button { onEdit() } label: {
+                            Image(systemName: "pencil")
+                        }
                         .foregroundColor(.brandOrange)
+                    }
                 }
             }
             .alert("Add Funds", isPresented: $showingAddFunds) {
@@ -283,6 +341,12 @@ struct GoalDetailSheet: View {
                 }
                 Button("Cancel", role: .cancel) {}
             }
+            .confirmationDialog("Delete \"\(goal.title)\"?", isPresented: $showingDeleteConfirm, titleVisibility: .visible) {
+                Button("Delete Goal", role: .destructive) { onDelete() }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This cannot be undone.")
+            }
         }
     }
 
@@ -294,5 +358,172 @@ struct GoalDetailSheet: View {
         .frame(maxWidth: .infinity)
         .padding(16)
         .cardStyle()
+    }
+}
+
+// MARK: - Edit Goal Sheet
+
+struct EditGoalSheet: View {
+    let goal: Goal
+    let onSave: (Goal) -> Void
+    let onDelete: () -> Void
+
+    @Environment(\.dismiss) var dismiss
+    @State private var title: String
+    @State private var targetText: String
+    @State private var currentText: String
+    @State private var monthlyText: String
+    @State private var targetDate: Date
+    @State private var emoji: String
+    @State private var category: GoalCategory
+    @State private var showingDeleteConfirm = false
+
+    private let emojiOptions = ["⭐", "✈️", "🏠", "🚗", "💻", "📱", "🎓", "🛡️", "💰", "🎯", "🌴", "💎",
+                                 "🏋️", "🎨", "🎵", "🍕", "☕", "🌍", "🏖️", "🎮", "🐾", "💍", "🎂", "🏆"]
+
+    init(goal: Goal, onSave: @escaping (Goal) -> Void, onDelete: @escaping () -> Void) {
+        self.goal = goal
+        self.onSave = onSave
+        self.onDelete = onDelete
+        _title = State(initialValue: goal.title)
+        _targetText = State(initialValue: String(format: "%.0f", goal.targetAmount))
+        _currentText = State(initialValue: String(format: "%.0f", goal.currentAmount))
+        _monthlyText = State(initialValue: String(format: "%.0f", goal.monthlyContribution))
+        _targetDate = State(initialValue: goal.targetDate)
+        _emoji = State(initialValue: goal.emoji)
+        _category = State(initialValue: goal.category)
+    }
+
+    private var canSave: Bool {
+        !title.isEmpty && (Double(targetText) ?? 0) > 0 && (Double(monthlyText) ?? 0) > 0
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 24) {
+                    // Emoji picker
+                    VStack(spacing: 12) {
+                        Text(emoji).font(.system(size: 64))
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 8) {
+                            ForEach(emojiOptions, id: \.self) { e in
+                                Button { emoji = e } label: {
+                                    Text(e).font(.system(size: 26))
+                                        .frame(width: 46, height: 46)
+                                        .background(emoji == e ? Color.brandOrange.opacity(0.15) : Color.appSurface)
+                                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(emoji == e ? Color.brandOrange : Color.clear, lineWidth: 1.5))
+                                }
+                            }
+                        }
+                    }
+                    .padding(20).cardStyle()
+
+                    // Fields
+                    VStack(spacing: 16) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Goal Name").font(.system(size: 12, weight: .semibold)).foregroundColor(.textSecondary)
+                            TextField("e.g. Japan Trip", text: $title).textFieldStyle(AppTextFieldStyle())
+                        }
+
+                        HStack(spacing: 12) {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("Target ($)").font(.system(size: 12, weight: .semibold)).foregroundColor(.textSecondary)
+                                TextField("3000", text: $targetText)
+                                    .textFieldStyle(AppTextFieldStyle()).keyboardType(.decimalPad)
+                            }
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("Saved so far ($)").font(.system(size: 12, weight: .semibold)).foregroundColor(.textSecondary)
+                                TextField("0", text: $currentText)
+                                    .textFieldStyle(AppTextFieldStyle()).keyboardType(.decimalPad)
+                            }
+                        }
+
+                        HStack(spacing: 12) {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("Monthly ($)").font(.system(size: 12, weight: .semibold)).foregroundColor(.textSecondary)
+                                TextField("300", text: $monthlyText)
+                                    .textFieldStyle(AppTextFieldStyle()).keyboardType(.decimalPad)
+                            }
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("Target Date").font(.system(size: 12, weight: .semibold)).foregroundColor(.textSecondary)
+                                DatePicker("", selection: $targetDate, displayedComponents: .date)
+                                    .labelsHidden()
+                                    .padding(10)
+                                    .background(Color.appSurface)
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                        }
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Category").font(.system(size: 12, weight: .semibold)).foregroundColor(.textSecondary)
+                            Picker("Category", selection: $category) {
+                                ForEach(GoalCategory.allCases, id: \.self) { cat in
+                                    Text(cat.rawValue).tag(cat)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                            .padding(14)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.appSurface)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
+                    }
+                    .padding(20).cardStyle()
+
+                    // Delete
+                    Button(role: .destructive) {
+                        showingDeleteConfirm = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "trash")
+                            Text("Delete Goal")
+                        }
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(.brandRed)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(Color.brandRed.opacity(0.08))
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                    }
+                }
+                .padding(.horizontal, 20).padding(.bottom, 40)
+            }
+            .navigationTitle("Edit Goal")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }.foregroundColor(.brandOrange)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        guard canSave,
+                              let target = Double(targetText),
+                              let current = Double(currentText),
+                              let monthly = Double(monthlyText) else { return }
+                        var updated = goal
+                        updated.title = title
+                        updated.targetAmount = target
+                        updated.currentAmount = min(current, target)
+                        updated.monthlyContribution = monthly
+                        updated.targetDate = targetDate
+                        updated.emoji = emoji
+                        updated.category = category
+                        onSave(updated)
+                        dismiss()
+                    }
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(canSave ? .brandOrange : .textSecondary)
+                    .disabled(!canSave)
+                }
+            }
+            .confirmationDialog("Delete \"\(goal.title)\"?", isPresented: $showingDeleteConfirm, titleVisibility: .visible) {
+                Button("Delete Goal", role: .destructive) { onDelete(); dismiss() }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This cannot be undone.")
+            }
+        }
     }
 }

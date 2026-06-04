@@ -3,6 +3,8 @@ import SwiftUI
 struct GoalCardView: View {
     let goal: Goal
     var onTap: (() -> Void)? = nil
+    var onEdit: (() -> Void)? = nil
+    var onDelete: (() -> Void)? = nil
     @State private var appeared = false
 
     var body: some View {
@@ -56,5 +58,13 @@ struct GoalCardView: View {
         }
         .buttonStyle(.plain)
         .onAppear { appeared = true }
+        .contextMenu {
+            if let onEdit {
+                Button { onEdit() } label: { Label("Edit Goal", systemImage: "pencil") }
+            }
+            if let onDelete {
+                Button(role: .destructive) { onDelete() } label: { Label("Delete Goal", systemImage: "trash") }
+            }
+        }
     }
 }

@@ -96,6 +96,23 @@ class AppViewModel: ObservableObject {
         goals.append(goal)
     }
 
+    func updateGoalFull(_ goal: Goal) {
+        guard let i = goals.firstIndex(where: { $0.id == goal.id }) else { return }
+        goals[i] = goal
+        if goals[i].currentAmount >= goals[i].targetAmount && !goals[i].isCompleted {
+            goals[i].isCompleted = true
+            goals[i].completedDate = Date()
+            completedGoal = goals[i]
+            showingGoalCompletion = true
+        }
+    }
+
+    func deleteGoal(_ goal: Goal) {
+        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+            goals.removeAll { $0.id == goal.id }
+        }
+    }
+
     func monthlyProjections() -> [SpendingProjection] {
         let calendar = Calendar.current
         let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
