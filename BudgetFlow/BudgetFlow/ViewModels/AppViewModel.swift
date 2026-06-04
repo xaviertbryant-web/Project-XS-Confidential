@@ -48,6 +48,28 @@ class AppViewModel: ObservableObject {
             .sorted { $0.amount > $1.amount }
     }
 
+    // Category → budget bucket mapping
+    static let needsCategories: Set<TransactionCategory> = [.transport, .bills, .health]
+    static let wantsCategories: Set<TransactionCategory> = [.food, .shopping, .entertainment, .other]
+
+    func budgetFor(category: TransactionCategory) -> Double {
+        let monthly = paycheckBudget.monthlyIncome
+        if Self.needsCategories.contains(category) {
+            return (monthly * paycheckBudget.needsPercentage) / Double(Self.needsCategories.count)
+        } else if Self.wantsCategories.contains(category) {
+            return (monthly * paycheckBudget.wantsPercentage) / Double(Self.wantsCategories.count)
+        }
+        return 0
+    }
+
+    // Delta per category: positive = surplus, negative = overspent, nil = no budget defined
+    func budgetDelta(for category: TransactionCategory) -> Double? {
+        let budget = budgetFor(category: category)
+        guard budget > 0 else { return nil }
+        let spent = spendingByCategory.first(where: { $0.category == category })?.amount ?? 0
+        return budget - spent
+    }
+
     func addTransaction(_ transaction: Transaction) {
         transactions.insert(transaction, at: 0)
     }

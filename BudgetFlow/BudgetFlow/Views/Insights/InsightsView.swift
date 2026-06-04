@@ -108,41 +108,38 @@ struct InsightsView: View {
 
     var spendingTrendSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Spending by Category")
+            Text("Budget vs Actual")
                 .font(.system(size: 18, weight: .bold))
                 .foregroundColor(.textPrimary)
 
-            VStack(spacing: 12) {
-                ForEach(appViewModel.spendingByCategory.prefix(5), id: \.category) { item in
-                    let total = appViewModel.totalSpentThisMonth
-                    let pct = total > 0 ? item.amount / total : 0
-                    HStack(spacing: 12) {
-                        ZStack {
-                            Circle().fill(Color(hex: item.category.color).opacity(0.15)).frame(width: 40, height: 40)
-                            Image(systemName: item.category.icon)
-                                .foregroundColor(Color(hex: item.category.color))
-                                .font(.system(size: 18))
-                        }
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Text(item.category.rawValue).font(.system(size: 14, weight: .semibold)).foregroundColor(.textPrimary)
-                                Spacer()
-                                Text("$\(String(format: "%.0f", item.amount))").font(.system(size: 14, weight: .bold)).foregroundColor(.textPrimary)
-                            }
-                            GeometryReader { geo in
-                                ZStack(alignment: .leading) {
-                                    RoundedRectangle(cornerRadius: 4).fill(Color(hex: item.category.color).opacity(0.12)).frame(height: 6)
-                                    RoundedRectangle(cornerRadius: 4).fill(Color(hex: item.category.color)).frame(width: geo.size.width * pct, height: 6)
-                                }
-                            }
-                            .frame(height: 6)
-                        }
+            VStack(spacing: 0) {
+                ForEach(Array(budgetRows.enumerated()), id: \.element.category) { index, item in
+                    CategoryBudgetRow(
+                        category: item.category,
+                        spent: item.spent,
+                        budget: item.budget
+                    )
+                    if index < budgetRows.count - 1 {
+                        Divider().padding(.horizontal, 16)
                     }
                 }
             }
-            .padding(20)
             .cardStyle()
         }
+    }
+
+    // Merge all budgeted categories, inserting zero-spend ones so every row is visible
+    private var budgetRows: [(category: TransactionCategory, spent: Double, budget: Double)] {
+        let budgetedCategories: [TransactionCategory] = [
+            .food, .transport, .shopping, .entertainment, .bills, .health, .other
+        ]
+        return budgetedCategories.compactMap { cat in
+            let budget = appViewModel.budgetFor(category: cat)
+            guard budget > 0 else { return nil }
+            let spent = appViewModel.spendingByCategory.first(where: { $0.category == cat })?.amount ?? 0
+            return (category: cat, spent: spent, budget: budget)
+        }
+        .sorted { $0.budget > $1.budget }
     }
 
     var smartTipsSection: some View {
@@ -177,6 +174,103 @@ struct InsightsView: View {
         .padding(16)
         .background(color.opacity(0.06))
         .clipShape(RoundedRectangle(cornerRadius: 14))
+    }
+}
+
+struct CategoryBudgetRow: View {
+    let category: TransactionCategory
+    let spent: Double
+    let budget: Double
+
+    @State private var appeared = false
+
+    var delta: Double { budget - spent }
+    var progress: CGFloat { budget > 0 ? CGFloat(min(spent / budget, 1.0)) : 0 }
+
+    // Over budget
+    var isOver: Bool { delta < -0.005 }
+    // Exactly zero remaining (within 50 cents rounding)
+    var isExact: Bool { !isOver && abs(delta) < 0.50 }
+    // Surplus
+    var isSurplus: Bool { !isOver && !isExact }
+
+    var deltaColor: Color {
+        if isOver    { return .brandRed }
+        if isExact   { return .textSecondary }
+        return .successGreen
+    }
+
+    var deltaIcon: String {
+        if isOver  { return "arrow.down" }
+        if isExact { return "equal" }
+        return "arrow.up"
+    }
+
+    var deltaText: String {
+        if isExact { return "$0" }
+        return "$\(String(format: "%.0f", abs(delta)))"
+    }
+
+    var body: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 12) {
+                // Category icon
+                ZStack {
+                    Circle()
+                        .fill(Color(hex: category.color).opacity(0.12))
+                        .frame(width: 40, height: 40)
+                    Image(systemName: category.icon)
+                        .foregroundColor(Color(hex: category.color))
+                        .font(.system(size: 17))
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(category.rawValue)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.textPrimary)
+                    Text("$\(String(format: "%.0f", spent)) of $\(String(format: "%.0f", budget))")
+                        .font(.system(size: 11))
+                        .foregroundColor(.textSecondary)
+                }
+
+                Spacer()
+
+                // Delta indicator
+                HStack(spacing: 3) {
+                    Image(systemName: deltaIcon)
+                        .font(.system(size: 10, weight: .bold))
+                    Text(deltaText)
+                        .font(.system(size: 14, weight: .bold))
+                        .contentTransition(.numericText())
+                }
+                .foregroundColor(deltaColor)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(deltaColor.opacity(0.10))
+                .clipShape(Capsule())
+            }
+
+            // Progress bar — fills toward budget; turns red when over
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color(hex: category.color).opacity(0.10))
+                        .frame(height: 5)
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(
+                            isOver
+                                ? LinearGradient(colors: [.brandOrange, .brandRed], startPoint: .leading, endPoint: .trailing)
+                                : LinearGradient(colors: [Color(hex: category.color)], startPoint: .leading, endPoint: .trailing)
+                        )
+                        .frame(width: appeared ? geo.size.width * progress : 0, height: 5)
+                        .animation(.spring(response: 0.8, dampingFraction: 0.78).delay(0.05), value: appeared)
+                }
+            }
+            .frame(height: 5)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .onAppear { appeared = true }
     }
 }
 

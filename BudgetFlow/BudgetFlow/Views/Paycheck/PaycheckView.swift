@@ -28,6 +28,28 @@ struct PaycheckView: View {
             }
             .navigationBarHidden(true)
         }
+        .onAppear {
+            // Seed local VM from stored budget so they stay in sync
+            vm.paycheckInput = String(format: "%.0f", appViewModel.paycheckBudget.paycheckAmount)
+            vm.needsSlider = appViewModel.paycheckBudget.needsPercentage
+            vm.wantsSlider = appViewModel.paycheckBudget.wantsPercentage
+            vm.savingsSlider = appViewModel.paycheckBudget.savingsPercentage
+            vm.selectedFrequency = appViewModel.paycheckBudget.frequency
+        }
+        // Push every slider/input change back to AppViewModel so home card stays live
+        .onChange(of: vm.needsSlider)    { _, _ in syncToApp() }
+        .onChange(of: vm.wantsSlider)    { _, _ in syncToApp() }
+        .onChange(of: vm.savingsSlider)  { _, _ in syncToApp() }
+        .onChange(of: vm.paycheckInput)  { _, _ in syncToApp() }
+        .onChange(of: vm.selectedFrequency) { _, _ in syncToApp() }
+    }
+
+    private func syncToApp() {
+        appViewModel.paycheckBudget.paycheckAmount  = vm.paycheck
+        appViewModel.paycheckBudget.frequency       = vm.selectedFrequency
+        appViewModel.paycheckBudget.needsPercentage = vm.needsSlider
+        appViewModel.paycheckBudget.wantsPercentage = vm.wantsSlider
+        appViewModel.paycheckBudget.savingsPercentage = vm.savingsSlider
     }
 
     var headerSection: some View {
