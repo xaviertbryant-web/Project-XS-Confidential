@@ -28,6 +28,19 @@ class AppViewModel: ObservableObject {
         max(totalIncomeThisMonth - totalSpentThisMonth, 0)
     }
 
+    // Simulated upcoming bills due before month end
+    var upcomingBillsAmount: Double {
+        transactions
+            .filter { !$0.isIncome && $0.category == .bills }
+            .reduce(0) { $0 + $1.amount } * 0.4 + 147.50
+    }
+
+    var monthlyBudget: Double { paycheckBudget.monthlyIncome }
+
+    var budgetRemaining: Double {
+        max(monthlyBudget - totalSpentThisMonth - upcomingBillsAmount, 0)
+    }
+
     var spendingByCategory: [(category: TransactionCategory, amount: Double)] {
         let expenses = transactions.filter { !$0.isIncome }
         let grouped = Dictionary(grouping: expenses, by: { $0.category })

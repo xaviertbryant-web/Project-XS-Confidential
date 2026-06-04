@@ -77,10 +77,10 @@ struct DashboardView: View {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Total Balance")
+                        Text("Monthly Budget")
                             .font(.system(size: 13, weight: .medium))
                             .foregroundColor(.white.opacity(0.7))
-                        Text("$\(String(format: "%.2f", appViewModel.profile.totalBalance))")
+                        Text("$\(String(format: "%.2f", appViewModel.monthlyBudget))")
                             .font(.system(size: 36, weight: .bold))
                             .foregroundColor(.white)
                     }
@@ -96,23 +96,31 @@ struct DashboardView: View {
                     }
                 }
 
-                Spacer().frame(height: 24)
+                Spacer().frame(height: 16)
+
+                MonthlyBudgetBar(
+                    spent: appViewModel.totalSpentThisMonth,
+                    upcoming: appViewModel.upcomingBillsAmount,
+                    total: appViewModel.monthlyBudget
+                )
+
+                Spacer().frame(height: 14)
 
                 HStack {
-                    cardStat(label: "Income", value: "+$\(String(format: "%.0f", appViewModel.totalIncomeThisMonth))", positive: true)
+                    cardStat(label: "Spent", value: "$\(String(format: "%.0f", appViewModel.totalSpentThisMonth))", positive: false)
                     Spacer()
                     Rectangle().fill(.white.opacity(0.2)).frame(width: 1, height: 36)
                     Spacer()
-                    cardStat(label: "Spent", value: "-$\(String(format: "%.0f", appViewModel.totalSpentThisMonth))", positive: false)
+                    cardStat(label: "Upcoming", value: "$\(String(format: "%.0f", appViewModel.upcomingBillsAmount))", positive: false)
                     Spacer()
                     Rectangle().fill(.white.opacity(0.2)).frame(width: 1, height: 36)
                     Spacer()
-                    cardStat(label: "Saved", value: "$\(String(format: "%.0f", appViewModel.savedThisMonth))", positive: true)
+                    cardStat(label: "Remaining", value: "$\(String(format: "%.0f", appViewModel.budgetRemaining))", positive: true)
                 }
             }
             .padding(24)
         }
-        .frame(height: 180)
+        .frame(height: 200)
         .shadow(color: .black.opacity(0.2), radius: 20, x: 0, y: 8)
     }
 
@@ -221,6 +229,67 @@ struct DashboardView: View {
         .shadow(color: .black.opacity(0.1), radius: 12, x: 0, y: 4)
         .padding(.horizontal, 20)
         .padding(.top, 60)
+    }
+}
+
+struct MonthlyBudgetBar: View {
+    let spent: Double
+    let upcoming: Double
+    let total: Double
+
+    @State private var appeared = false
+
+    var spentFraction: CGFloat  { total > 0 ? CGFloat(min(spent / total, 1.0)) : 0 }
+    var upcomingFraction: CGFloat {
+        let remaining = max(total - spent, 0)
+        return total > 0 ? CGFloat(min(upcoming / total, remaining / total)) : 0
+    }
+    var remainingFraction: CGFloat { max(1.0 - spentFraction - upcomingFraction, 0) }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            GeometryReader { geo in
+                HStack(spacing: 2) {
+                    // Spent — solid grey
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.white.opacity(0.35))
+                        .frame(width: appeared ? geo.size.width * spentFraction : 0, height: 6)
+                        .animation(.spring(response: 0.9, dampingFraction: 0.8).delay(0.1), value: appeared)
+
+                    // Upcoming bills — lighter grey with dashed feel (slightly brighter)
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.white.opacity(0.18))
+                        .frame(width: appeared ? geo.size.width * upcomingFraction : 0, height: 6)
+                        .animation(.spring(response: 0.9, dampingFraction: 0.8).delay(0.2), value: appeared)
+
+                    // Remaining — green
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.successGreen.opacity(0.85))
+                        .frame(width: appeared ? geo.size.width * remainingFraction : 0, height: 6)
+                        .animation(.spring(response: 0.9, dampingFraction: 0.8).delay(0.3), value: appeared)
+                }
+            }
+            .frame(height: 6)
+
+            // Legend
+            HStack(spacing: 14) {
+                legendDot(color: .white.opacity(0.35), label: "Spent")
+                legendDot(color: .white.opacity(0.55), label: "Bills due")
+                legendDot(color: .successGreen, label: "Remaining")
+            }
+        }
+        .onAppear { appeared = true }
+    }
+
+    func legendDot(color: Color, label: String) -> some View {
+        HStack(spacing: 4) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(color)
+                .frame(width: 10, height: 4)
+            Text(label)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(.white.opacity(0.6))
+        }
     }
 }
 
