@@ -21,6 +21,8 @@ struct UserProfile: Codable {
         return monthlySaved / monthlyIncome
     }
 
+    print("hello world")
+
     static let `default` = UserProfile(
         name: "Morgan",
         currency: "$",
