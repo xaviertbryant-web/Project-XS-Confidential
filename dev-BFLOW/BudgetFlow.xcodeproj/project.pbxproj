@@ -7,67 +7,67 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AE62155D3B0B469CBFAFBEC7 /* BudgetFlowApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF2890949E34F8FA610430D /* BudgetFlowApp.swift */; };
+		0CFFA69A03CE4D95A4E856C1 /* TransactionRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7E84D5D3B741F48B0E9236 /* TransactionRowView.swift */; };
+		0FEF99B4E40343B08AAE7909 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C43744B490E44A7BBD69258 /* SettingsView.swift */; };
+		11B976857D1C4BCCB0022686 /* PaycheckBudget.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABA46873C864E3A88653B2A /* PaycheckBudget.swift */; };
+		2C7F211080EF4AEBAF508676 /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA3994F8DB54FAEAB9FCA03 /* Goal.swift */; };
+		2E72F10932054A14BAEAFF7D /* GoalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EC769E13B9F47DA83B55B6E /* GoalsView.swift */; };
+		4795E62B579D482EBC6E5620 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 306A414A8A604DECAA116FD6 /* AppTheme.swift */; };
+		4D42409C24264250A077F758 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613D93844BEE41E38AE193FD /* UserProfile.swift */; };
+		4EDC040967E94407857BE9ED /* CategoryBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4CF27CF45843368939C70E /* CategoryBadge.swift */; };
+		56AD12D9B8794BC687553E2D /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA1D9ACAA9F4E7EA6B42185 /* PrimaryButton.swift */; };
+		6338EC9531BF4905BE0CDFB4 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E94FB7F0CB144966B560FCEE /* DataService.swift */; };
+		883DEFEDE1744143A8A9D4AD /* PaycheckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9094C6BE605544BC88FB7A12 /* PaycheckView.swift */; };
+		8C1BD944AA60484C91F686BE /* BiometricService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87194444AB554080AE3BE2E1 /* BiometricService.swift */; };
+		91D67FAAC9FF488D993F97E5 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E28C42C750A437B80349C24 /* Transaction.swift */; };
+		9690529BCA0B4D16925E3B68 /* GoalCompletionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC2EF74DFA74E809456EA9A /* GoalCompletionView.swift */; };
+		990443EFAAB543E19C72D8DB /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0B7C1109E04624929CD311 /* DashboardViewModel.swift */; };
+		9ABFBF798AFB4FF7958637BA /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A59E4883E4884AD487C09467 /* DashboardView.swift */; };
 		9ADA66903CB245C79C0C544A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E667456C94714953BACB4CCF /* ContentView.swift */; };
 		9D75503D72D640BA87AD886A /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B635F5A44BC4104B092748A /* AppColors.swift */; };
-		4795E62B579D482EBC6E5620 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 306A414A8A604DECAA116FD6 /* AppTheme.swift */; };
-		91D67FAAC9FF488D993F97E5 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E28C42C750A437B80349C24 /* Transaction.swift */; };
-		2C7F211080EF4AEBAF508676 /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA3994F8DB54FAEAB9FCA03 /* Goal.swift */; };
-		11B976857D1C4BCCB0022686 /* PaycheckBudget.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABA46873C864E3A88653B2A /* PaycheckBudget.swift */; };
-		CE95062F61D54A31B3EA98E1 /* Insight.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D51D26818F4AF0ADBAC620 /* Insight.swift */; };
-		4D42409C24264250A077F758 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613D93844BEE41E38AE193FD /* UserProfile.swift */; };
-		CCF878FC5E5C41D38E537C70 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E1596564D34338B421622A /* AppViewModel.swift */; };
-		990443EFAAB543E19C72D8DB /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0B7C1109E04624929CD311 /* DashboardViewModel.swift */; };
-		D3F860B524654A22A4AECC00 /* GoalsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE53C92FBBC4F55A56FC2F2 /* GoalsViewModel.swift */; };
-		C4FBA775AB2644CF9FAE936D /* InsightsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13EC4B7372434A11B42A55ED /* InsightsViewModel.swift */; };
-		FE02EAD004C34B758630A9D8 /* PaycheckViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A8384F3B96400A9041F58D /* PaycheckViewModel.swift */; };
-		9ABFBF798AFB4FF7958637BA /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A59E4883E4884AD487C09467 /* DashboardView.swift */; };
-		56AD12D9B8794BC687553E2D /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA1D9ACAA9F4E7EA6B42185 /* PrimaryButton.swift */; };
-		0CFFA69A03CE4D95A4E856C1 /* TransactionRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7E84D5D3B741F48B0E9236 /* TransactionRowView.swift */; };
-		4EDC040967E94407857BE9ED /* CategoryBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4CF27CF45843368939C70E /* CategoryBadge.swift */; };
-		BEEC5B49A205402CB910B2C1 /* CircularProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBE2C536A8F640B3B98BE6E4 /* CircularProgressView.swift */; };
 		AC19D80A9F1F45E98F5D4C92 /* GoalCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1507C1AAB3A34786A053EF27 /* GoalCardView.swift */; };
-		9690529BCA0B4D16925E3B68 /* GoalCompletionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC2EF74DFA74E809456EA9A /* GoalCompletionView.swift */; };
-		2E72F10932054A14BAEAFF7D /* GoalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EC769E13B9F47DA83B55B6E /* GoalsView.swift */; };
-		883DEFEDE1744143A8A9D4AD /* PaycheckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9094C6BE605544BC88FB7A12 /* PaycheckView.swift */; };
-		E3D4B50DCEB9437EA0E51289 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F02968661F42CA8F668D8F /* InsightsView.swift */; };
-		0FEF99B4E40343B08AAE7909 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C43744B490E44A7BBD69258 /* SettingsView.swift */; };
+		AE62155D3B0B469CBFAFBEC7 /* BudgetFlowApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF2890949E34F8FA610430D /* BudgetFlowApp.swift */; };
+		BEEC5B49A205402CB910B2C1 /* CircularProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBE2C536A8F640B3B98BE6E4 /* CircularProgressView.swift */; };
+		C4FBA775AB2644CF9FAE936D /* InsightsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13EC4B7372434A11B42A55ED /* InsightsViewModel.swift */; };
+		CCF878FC5E5C41D38E537C70 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E1596564D34338B421622A /* AppViewModel.swift */; };
+		CE95062F61D54A31B3EA98E1 /* Insight.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D51D26818F4AF0ADBAC620 /* Insight.swift */; };
 		D279509C966B4C0883F64DB2 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 730F54B182D3494A820147B9 /* NotificationService.swift */; };
-		8C1BD944AA60484C91F686BE /* BiometricService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87194444AB554080AE3BE2E1 /* BiometricService.swift */; };
-		6338EC9531BF4905BE0CDFB4 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E94FB7F0CB144966B560FCEE /* DataService.swift */; };
+		D3F860B524654A22A4AECC00 /* GoalsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE53C92FBBC4F55A56FC2F2 /* GoalsViewModel.swift */; };
+		E3D4B50DCEB9437EA0E51289 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F02968661F42CA8F668D8F /* InsightsView.swift */; };
+		FE02EAD004C34B758630A9D8 /* PaycheckViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A8384F3B96400A9041F58D /* PaycheckViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		9304D2807122407A91B663C3 /* BudgetFlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BudgetFlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B255ACA78B4C4ADE8554C08C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9AF2890949E34F8FA610430D /* BudgetFlowApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetFlowApp.swift; sourceTree = "<group>"; };
-		E667456C94714953BACB4CCF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		8B635F5A44BC4104B092748A /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
-		306A414A8A604DECAA116FD6 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
-		5E28C42C750A437B80349C24 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
-		5AA3994F8DB54FAEAB9FCA03 /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
-		AABA46873C864E3A88653B2A /* PaycheckBudget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaycheckBudget.swift; sourceTree = "<group>"; };
-		E4D51D26818F4AF0ADBAC620 /* Insight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Insight.swift; sourceTree = "<group>"; };
-		613D93844BEE41E38AE193FD /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
-		F5E1596564D34338B421622A /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
-		AA0B7C1109E04624929CD311 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
-		CDE53C92FBBC4F55A56FC2F2 /* GoalsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsViewModel.swift; sourceTree = "<group>"; };
-		13EC4B7372434A11B42A55ED /* InsightsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsViewModel.swift; sourceTree = "<group>"; };
-		74A8384F3B96400A9041F58D /* PaycheckViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaycheckViewModel.swift; sourceTree = "<group>"; };
-		A59E4883E4884AD487C09467 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
-		9DA1D9ACAA9F4E7EA6B42185 /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
 		0C7E84D5D3B741F48B0E9236 /* TransactionRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRowView.swift; sourceTree = "<group>"; };
-		7C4CF27CF45843368939C70E /* CategoryBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryBadge.swift; sourceTree = "<group>"; };
-		FBE2C536A8F640B3B98BE6E4 /* CircularProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProgressView.swift; sourceTree = "<group>"; };
-		1507C1AAB3A34786A053EF27 /* GoalCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalCardView.swift; sourceTree = "<group>"; };
-		4EC2EF74DFA74E809456EA9A /* GoalCompletionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalCompletionView.swift; sourceTree = "<group>"; };
 		0EC769E13B9F47DA83B55B6E /* GoalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsView.swift; sourceTree = "<group>"; };
-		9094C6BE605544BC88FB7A12 /* PaycheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaycheckView.swift; sourceTree = "<group>"; };
-		F3F02968661F42CA8F668D8F /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
+		13EC4B7372434A11B42A55ED /* InsightsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsViewModel.swift; sourceTree = "<group>"; };
+		1507C1AAB3A34786A053EF27 /* GoalCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalCardView.swift; sourceTree = "<group>"; };
 		1C43744B490E44A7BBD69258 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		306A414A8A604DECAA116FD6 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		4EC2EF74DFA74E809456EA9A /* GoalCompletionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalCompletionView.swift; sourceTree = "<group>"; };
+		5AA3994F8DB54FAEAB9FCA03 /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
+		5E28C42C750A437B80349C24 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
+		613D93844BEE41E38AE193FD /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		730F54B182D3494A820147B9 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		74A8384F3B96400A9041F58D /* PaycheckViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaycheckViewModel.swift; sourceTree = "<group>"; };
+		7C4CF27CF45843368939C70E /* CategoryBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryBadge.swift; sourceTree = "<group>"; };
 		87194444AB554080AE3BE2E1 /* BiometricService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricService.swift; sourceTree = "<group>"; };
+		8B635F5A44BC4104B092748A /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
+		9094C6BE605544BC88FB7A12 /* PaycheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaycheckView.swift; sourceTree = "<group>"; };
+		9304D2807122407A91B663C3 /* BudgetFlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BudgetFlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AF2890949E34F8FA610430D /* BudgetFlowApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetFlowApp.swift; sourceTree = "<group>"; };
+		9DA1D9ACAA9F4E7EA6B42185 /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
+		A59E4883E4884AD487C09467 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		AA0B7C1109E04624929CD311 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		AABA46873C864E3A88653B2A /* PaycheckBudget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaycheckBudget.swift; sourceTree = "<group>"; };
+		B255ACA78B4C4ADE8554C08C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CDE53C92FBBC4F55A56FC2F2 /* GoalsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsViewModel.swift; sourceTree = "<group>"; };
+		E4D51D26818F4AF0ADBAC620 /* Insight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Insight.swift; sourceTree = "<group>"; };
+		E667456C94714953BACB4CCF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E94FB7F0CB144966B560FCEE /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
+		F3F02968661F42CA8F668D8F /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
+		F5E1596564D34338B421622A /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+		FBE2C536A8F640B3B98BE6E4 /* CircularProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProgressView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,25 +81,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		AC26F298551B4817805E0B29 /* Goals */ = {
+		1CE1B56F22C140B08FA632EA /* Paycheck */ = {
 			isa = PBXGroup;
 			children = (
-				FBE2C536A8F640B3B98BE6E4 /* CircularProgressView.swift */,
-				1507C1AAB3A34786A053EF27 /* GoalCardView.swift */,
-				4EC2EF74DFA74E809456EA9A /* GoalCompletionView.swift */,
-				0EC769E13B9F47DA83B55B6E /* GoalsView.swift */,
+				9094C6BE605544BC88FB7A12 /* PaycheckView.swift */,
 			);
-			name = Goals;
+			name = Paycheck;
 			sourceTree = "<group>";
 		};
-		7CBCB422D5544C629718E969 /* Services */ = {
+		59BA4C7CC6ED49F88B0E1483 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
-				730F54B182D3494A820147B9 /* NotificationService.swift */,
-				87194444AB554080AE3BE2E1 /* BiometricService.swift */,
-				E94FB7F0CB144966B560FCEE /* DataService.swift */,
+				8B635F5A44BC4104B092748A /* AppColors.swift */,
+				306A414A8A604DECAA116FD6 /* AppTheme.swift */,
 			);
-			name = Services;
+			name = Theme;
 			sourceTree = "<group>";
 		};
 		5C89AFAEF3AF428B92535CC7 /* Dashboard */ = {
@@ -120,69 +116,14 @@
 			name = Components;
 			sourceTree = "<group>";
 		};
-		BED672764DD6432DB2BD3B3A /* Settings */ = {
+		7CBCB422D5544C629718E969 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				1C43744B490E44A7BBD69258 /* SettingsView.swift */,
+				730F54B182D3494A820147B9 /* NotificationService.swift */,
+				87194444AB554080AE3BE2E1 /* BiometricService.swift */,
+				E94FB7F0CB144966B560FCEE /* DataService.swift */,
 			);
-			name = Settings;
-			sourceTree = "<group>";
-		};
-		A7D7DA75C9B540A587E85950 /* Insights */ = {
-			isa = PBXGroup;
-			children = (
-				F3F02968661F42CA8F668D8F /* InsightsView.swift */,
-			);
-			name = Insights;
-			sourceTree = "<group>";
-		};
-		B80A7E79221B46E6A32E563B /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				F5E1596564D34338B421622A /* AppViewModel.swift */,
-				AA0B7C1109E04624929CD311 /* DashboardViewModel.swift */,
-				CDE53C92FBBC4F55A56FC2F2 /* GoalsViewModel.swift */,
-				13EC4B7372434A11B42A55ED /* InsightsViewModel.swift */,
-				74A8384F3B96400A9041F58D /* PaycheckViewModel.swift */,
-			);
-			name = ViewModels;
-			sourceTree = "<group>";
-		};
-		1CE1B56F22C140B08FA632EA /* Paycheck */ = {
-			isa = PBXGroup;
-			children = (
-				9094C6BE605544BC88FB7A12 /* PaycheckView.swift */,
-			);
-			name = Paycheck;
-			sourceTree = "<group>";
-		};
-		59BA4C7CC6ED49F88B0E1483 /* Theme */ = {
-			isa = PBXGroup;
-			children = (
-				8B635F5A44BC4104B092748A /* AppColors.swift */,
-				306A414A8A604DECAA116FD6 /* AppTheme.swift */,
-			);
-			name = Theme;
-			sourceTree = "<group>";
-		};
-		CC581B5946944686B4FC31FC /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				5E28C42C750A437B80349C24 /* Transaction.swift */,
-				5AA3994F8DB54FAEAB9FCA03 /* Goal.swift */,
-				AABA46873C864E3A88653B2A /* PaycheckBudget.swift */,
-				E4D51D26818F4AF0ADBAC620 /* Insight.swift */,
-				613D93844BEE41E38AE193FD /* UserProfile.swift */,
-			);
-			name = Models;
-			sourceTree = "<group>";
-		};
-		9ED10459B2EF4A5693D758C7 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				9304D2807122407A91B663C3 /* BudgetFlow.app */,
-			);
-			name = Products;
+			name = Services;
 			sourceTree = "<group>";
 		};
 		9091B4ACB840471C98B66565 /* BudgetFlow */ = {
@@ -204,6 +145,65 @@
 				9ED10459B2EF4A5693D758C7 /* Products */,
 			);
 			name = BudgetFlow;
+			sourceTree = "<group>";
+		};
+		9ED10459B2EF4A5693D758C7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9304D2807122407A91B663C3 /* BudgetFlow.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A7D7DA75C9B540A587E85950 /* Insights */ = {
+			isa = PBXGroup;
+			children = (
+				F3F02968661F42CA8F668D8F /* InsightsView.swift */,
+			);
+			name = Insights;
+			sourceTree = "<group>";
+		};
+		AC26F298551B4817805E0B29 /* Goals */ = {
+			isa = PBXGroup;
+			children = (
+				FBE2C536A8F640B3B98BE6E4 /* CircularProgressView.swift */,
+				1507C1AAB3A34786A053EF27 /* GoalCardView.swift */,
+				4EC2EF74DFA74E809456EA9A /* GoalCompletionView.swift */,
+				0EC769E13B9F47DA83B55B6E /* GoalsView.swift */,
+			);
+			name = Goals;
+			sourceTree = "<group>";
+		};
+		B80A7E79221B46E6A32E563B /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				F5E1596564D34338B421622A /* AppViewModel.swift */,
+				AA0B7C1109E04624929CD311 /* DashboardViewModel.swift */,
+				CDE53C92FBBC4F55A56FC2F2 /* GoalsViewModel.swift */,
+				13EC4B7372434A11B42A55ED /* InsightsViewModel.swift */,
+				74A8384F3B96400A9041F58D /* PaycheckViewModel.swift */,
+			);
+			name = ViewModels;
+			sourceTree = "<group>";
+		};
+		BED672764DD6432DB2BD3B3A /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				1C43744B490E44A7BBD69258 /* SettingsView.swift */,
+			);
+			name = Settings;
+			sourceTree = "<group>";
+		};
+		CC581B5946944686B4FC31FC /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5E28C42C750A437B80349C24 /* Transaction.swift */,
+				5AA3994F8DB54FAEAB9FCA03 /* Goal.swift */,
+				AABA46873C864E3A88653B2A /* PaycheckBudget.swift */,
+				E4D51D26818F4AF0ADBAC620 /* Insight.swift */,
+				613D93844BEE41E38AE193FD /* UserProfile.swift */,
+			);
+			name = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -249,7 +249,7 @@
 				en,
 				Base,
 			);
-			mainGroup = 9091B4ACB840471C98B66565;
+			mainGroup = 9091B4ACB840471C98B66565 /* BudgetFlow */;
 			productRefGroup = 9ED10459B2EF4A5693D758C7 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -308,6 +308,27 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		03BBE50F136840CAA45696FC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSTCALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSTCALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LE_SWIFT_VERSION = 5.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.budgetflow.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 		4FC9C9121AD14D4B8ABD5D7E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -320,12 +341,36 @@
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("DEBUG=1", "$(inherited)",);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+			};
+			name = Debug;
+		};
+		F044A7B403CB45D38B89739E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSTCALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSTCALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LE_SWIFT_VERSION = 5.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.budgetflow.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -342,48 +387,6 @@
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		F044A7B403CB45D38B89739E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSTCALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSTCALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = BudgetFlow/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LE_SWIFT_VERSION = 5.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.budgetflow.app;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Debug;
-		};
-		03BBE50F136840CAA45696FC /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSTCALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSTCALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = BudgetFlow/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LE_SWIFT_VERSION = 5.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.budgetflow.app;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

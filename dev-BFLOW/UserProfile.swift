@@ -20,8 +20,6 @@ struct UserProfile: Codable {
         guard monthlyIncome > 0 else { return 0 }
         return monthlySaved / monthlyIncome
     }
-
-    print("hello world!")
     
 
     static let `default` = UserProfile(

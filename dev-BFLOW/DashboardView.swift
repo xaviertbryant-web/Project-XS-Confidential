@@ -92,7 +92,7 @@ struct DashboardView: View {
                     Spacer()
                     VStack(spacing: 8) {
                         HStack(spacing: 6) {
-                            Circle().fill(.successGreen).frame(width: 8, height: 8)
+                            Circle().fill(Color.successGreen)
                             Text("Active").font(.system(size: 12, weight: .medium)).foregroundColor(.white.opacity(0.8))
                         }
                         .padding(.horizontal, 12).padding(.vertical, 6)
